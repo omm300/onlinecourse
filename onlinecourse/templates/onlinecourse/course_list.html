@@ -1,0 +1,25 @@
+{% extends "onlinecourse/base.html" %}
+{% block title %}Courses | OnlineCourse{% endblock %}
+{% block content %}
+<section class="hero p-4 p-md-5 mb-4">
+  <h1 class="display-6 fw-bold">Learn something new</h1>
+  <p class="lead mb-0">Explore courses, lessons, and practice assessments.</p>
+</section>
+<h2 class="h4 mb-3">Available courses</h2>
+<div class="row g-4">
+  {% for course in course_list %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <h3 class="h5">{{ course.name }}</h3>
+        <p class="text-secondary">{{ course.description|default:"Explore the lessons and complete the practice assessment."|truncatewords:24 }}</p>
+        <p class="small text-secondary">{{ course.lessons.count }} lesson(s) · {{ course.total_duration }} minutes</p>
+        <a class="btn btn-primary" href="{% url 'onlinecourse:course_details' course.id %}">View course</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12"><div class="alert alert-warning">No courses yet. Add a course from the Django admin site.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}

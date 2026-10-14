@@ -1,0 +1,35 @@
+{% extends "onlinecourse/base.html" %}
+{% block title %}{{ lesson.title }} | OnlineCourse{% endblock %}
+{% block content %}
+<a href="{% url 'onlinecourse:course_details' lesson.course_id %}" class="text-decoration-none">&larr; Back to {{ lesson.course.name }}</a>
+<div class="card mt-3"><div class="card-body p-4">
+  <h1 class="h3">{{ lesson.title }}</h1>
+  <p class="text-secondary">{{ lesson.estimated_minutes }} minutes</p>
+  <div class="mb-4">{{ lesson.content|linebreaks }}</div>
+  <hr>
+  <h2 class="h4">Mock exam</h2>
+  {% if user.is_authenticated %}
+  <form method="post" action="{% url 'onlinecourse:submit' lesson.id %}">
+    {% csrf_token %}
+    {% for question in lesson.questions.all %}
+    <fieldset class="border rounded p-3 mb-3">
+      <legend class="float-none w-auto px-2 fs-6 fw-semibold">{{ forloop.counter }}. {{ question.question_text }} <span class="text-secondary">({{ question.grade }} point{{ question.grade|pluralize }})</span></legend>
+      {% for choice in question.choices.all %}
+      <div class="form-check mb-1">
+        <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="choice_{{ choice.id }}" value="{{ choice.id }}">
+        <label class="form-check-label" for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
+      </div>
+      {% empty %}
+      <p class="text-warning mb-0">No choices configured for this question.</p>
+      {% endfor %}
+    </fieldset>
+    {% empty %}
+    <div class="alert alert-warning">No questions have been added to this lesson yet.</div>
+    {% endfor %}
+    {% if lesson.questions.exists %}<button class="btn btn-primary" type="submit">Submit mock exam</button>{% endif %}
+  </form>
+  {% else %}
+  <div class="alert alert-info">Please <a href="/admin/login/">log in</a> before submitting an exam. For this starter project, Django admin users can sign in.</div>
+  {% endif %}
+</div></div>
+{% endblock %}

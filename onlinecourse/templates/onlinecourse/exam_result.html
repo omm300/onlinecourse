@@ -1,0 +1,32 @@
+{% extends "onlinecourse/base.html" %}
+{% block title %}Exam result | OnlineCourse{% endblock %}
+{% block content %}
+<div class="card mb-4"><div class="card-body p-4 p-md-5 text-center">
+  {% if submission.total_questions and submission.score == submission.total_questions %}
+    <div class="display-4 mb-2">🎉</div><h1 class="text-success fw-bold">Congratulations!</h1>
+    <p class="lead">You completed the mock exam successfully.</p>
+  {% else %}
+    <h1 class="h2 fw-bold">Exam completed</h1>
+    <p class="lead">Review your answers below and try again to improve your score.</p>
+  {% endif %}
+  <div class="display-5 fw-bold">{{ submission.score }} / {{ submission.total_questions }}</div>
+  <p class="text-secondary mb-3">Score: {{ submission.percentage }}%</p>
+  <div class="progress mx-auto" role="progressbar" aria-valuenow="{{ submission.percentage }}" aria-valuemin="0" aria-valuemax="100" style="max-width:420px;height:12px">
+    <div class="progress-bar {% if submission.percentage >= 70 %}bg-success{% else %}bg-warning{% endif %}" style="width:{{ submission.percentage }}%"></div>
+  </div>
+  <p class="mt-3 mb-0"><strong>Course:</strong> {{ submission.lesson.course.name }} · <strong>Lesson:</strong> {{ submission.lesson.title }}</p>
+</div></div>
+<h2 class="h4 mb-3">Exam results</h2>
+{% for row in result_rows %}
+<div class="card mb-3"><div class="card-body">
+  <h3 class="h6">{{ forloop.counter }}. {{ row.question.question_text }}</h3>
+  {% if row.is_correct %}<span class="badge text-bg-success">Correct</span>{% else %}<span class="badge text-bg-danger">Incorrect</span>{% endif %}
+  <p class="mb-1 mt-2">Your answer: {% if row.selected_choice %}{{ row.selected_choice.choice_text }}{% else %}<em>Not answered</em>{% endif %}</p>
+  <p class="mb-0">Correct answer: {% if row.correct_choice %}{{ row.correct_choice.choice_text }}{% else %}Not configured{% endif %}</p>
+</div></div>
+{% empty %}
+<div class="alert alert-info">No questions were available for this exam.</div>
+{% endfor %}
+<a class="btn btn-primary" href="{% url 'onlinecourse:lesson_details' submission.lesson.id %}">Try again</a>
+<a class="btn btn-outline-secondary" href="{% url 'onlinecourse:course_details' submission.lesson.course_id %}">Back to course</a>
+{% endblock %}

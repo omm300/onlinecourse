@@ -1,0 +1,26 @@
+{% extends "onlinecourse/base.html" %}
+{% block title %}{{ course.name }} | OnlineCourse{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'onlinecourse:course_list' %}">Courses</a></li><li class="breadcrumb-item active">{{ course.name }}</li></ol></nav>
+<section class="hero p-4 p-md-5 mb-4">
+  <span class="badge text-bg-light mb-3">Online course</span>
+  <h1 class="display-6 fw-bold">{{ course.name }}</h1>
+  <p class="lead mb-2">{{ course.description|default:"Explore the course lessons below." }}</p>
+  <p class="mb-0">{{ course.total_duration }} minutes · {{ course.lessons.count }} lesson(s)</p>
+</section>
+<h2 class="h4 mb-3">Course lessons</h2>
+<div class="list-group shadow-sm">
+  {% for lesson in course.lessons.all %}
+  <div class="list-group-item p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+    <div>
+      <div class="fw-semibold">{{ lesson.order }}. {{ lesson.title }}</div>
+      <div class="small text-secondary">{{ lesson.estimated_minutes }} minutes</div>
+      <p class="mb-0 mt-1">{{ lesson.content|truncatewords:22 }}</p>
+    </div>
+    <a class="btn btn-outline-primary flex-shrink-0" href="{% url 'onlinecourse:lesson_details' lesson.id %}">Open lesson / exam</a>
+  </div>
+  {% empty %}
+  <div class="list-group-item">No lessons have been added to this course yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}
